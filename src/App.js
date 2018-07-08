@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Navigation from './components/navigation/Navigation';
-
+import Logo from './components/logo/Logo';
 
 
 class App extends Component {
@@ -8,6 +8,7 @@ class App extends Component {
     return (
       <div >
         <Navigation />
+        <Logo />
       </div>
     );
   }
