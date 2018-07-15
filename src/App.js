@@ -49,26 +49,47 @@ class App extends Component {
 		super();
 		this.state={
 			input: '',
-			imageLink: ''
+			imageLink: '',
+			box : {},
 		}
 	}
+
+	calculateRegion = (resp) =>{
+		const region = resp.outputs[0].data.regions[0].region_info.bounding_box;
+		const image = document.getElementById("image");
+		const imgWidth = Number(image.width);
+		const imgHeight = Number(image.height);
+
+		console.log(resp.outputs[0].data);
+	
+		return{
+			leftCol: region.left_col * imgWidth ,
+			topRow: region.top_row * imgHeight ,
+			rightCol: imgWidth - (region.right_col * imgWidth),
+			bottomRow: imgHeight - (region.bottom_row * imgHeight)
+		}
+
+	}
+
+	calculateBox = (boxData) =>
+	{
+		console.log(boxData);
+		this.setState({box:boxData});
+	}
+
+
+
 	onInputChange = (event) =>
 	{
 		this.setState ({input: event.target.value});
-		//console.log(this.input);
 	}
 
 	onButtonSubmit = (event) =>
 	{
 		this.setState({imageLink: this.state.input})
-		app.models.predict(Clarifai.FACE_DETECT_MODEL, this.state.input).then(
-		    function(response) {
-		    	console.log(response/*.outputs[0].data.regions[0].region_info.bounding_box*/);
-		    },
-		    function(err) {
-		      // there was an error
-		    }
-	  	);
+		app.models.predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
+		.then(response=> this.calculateBox(this.calculateRegion(response)))
+		.catch(err => console.log(err));
 	}
 	render() {
 	    return (
@@ -78,7 +99,7 @@ class App extends Component {
 	        <Navigation />
 	        <Logo />
 	        <LinkForm onInput={this.onInputChange} onClick={this.onButtonSubmit}/>
-	        <FaceDetection imageURL={this.state.imageLink}/>
+	        <FaceDetection faceBox={this.state.box} imageURL={this.state.imageLink}/>
 	      </div>
 	    );
 	  }
