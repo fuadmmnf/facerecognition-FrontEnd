@@ -7,9 +7,9 @@ const LinkForm= ({onInput, onClick}) =>
 		<div>
 			<p className='f3 tc'>This Brain can detect your face</p>
 			<div className='center'>
-				<div className='center pa4 br4 w-60 shadow-3'  >
-					<input type='text' className='w-80 f4 pa2  center ' onChange={onInput}/>
-					<button className='w-20 ph3 pv2 grow link f4 dib bg-light-purple pointer' onClick={onClick}>Detect! </button>
+				<div className='center pa4 br4 w-40 shadow-3'  >
+					<input type='text' className='w-75 f4 pa2  center ' onChange={onInput}/>
+					<button className='w-25 ph3 pv2 grow link f4 dib bg-light-purple pointer center' onClick={onClick}>Detect! </button>
 				</div>
 			</div>
 		</div>
