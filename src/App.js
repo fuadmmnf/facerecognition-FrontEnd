@@ -4,6 +4,8 @@ import Logo from './components/logo/Logo';
 import LinkForm from './components/linkform/LinkForm';
 import Particles from 'react-particles-js';
 import FaceDetection from './components/facedetection/FaceDetection';
+import SignIn from './components/signin/SignIn';
+import Register from './components/register/Register';
 import './App.css';
 import Clarifai from 'clarifai';
 
@@ -18,10 +20,10 @@ const particleProperty=
 {
 	particles: {
 		number:{
-			value: 150,
+			value: 80,
 			density:{
 				enable: true,
-				value_area: 800
+				value_area: 900
 			}
 
 		}
@@ -51,6 +53,8 @@ class App extends Component {
 			input: '',
 			imageLink: '',
 			box : {},
+			page : 'signin',
+			isSignedIn: false
 		}
 	}
 
@@ -77,8 +81,14 @@ class App extends Component {
 		this.setState({box:boxData});
 	}
 
+	onPageChange=(value) =>
+	{
+		if(value === 'FaceDetection') this.setState({isSignedIn : true});
+		else this.setState({isSignedIn : false});
+		this.setState({page: value});
+	}
 
-
+	
 	onInputChange = (event) =>
 	{
 		this.setState ({input: event.target.value});
@@ -96,10 +106,23 @@ class App extends Component {
 	      <div >
 	      	 <Particles className='particles'
 	              params={particleProperty} />
-	        <Navigation />
-	        <Logo />
-	        <LinkForm onInput={this.onInputChange} onClick={this.onButtonSubmit}/>
-	        <FaceDetection faceBox={this.state.box} imageURL={this.state.imageLink}/>
+	        <Navigation onPageChange={this.onPageChange} isSignedIn ={this.state.isSignedIn}/>
+	        {	
+	        	this.state.page === 'FaceDetection'
+	        	? <div>
+	      			<Logo />
+	     	   		<LinkForm onInput={this.onInputChange} onClick={this.onButtonSubmit}/>
+	       			<FaceDetection faceBox={this.state.box} imageURL={this.state.imageLink}/>
+	      		 </div> : 
+	        	(
+	        		this.state.page === 'Register'
+	        		? <Register onPageChange={this.onPageChange}/>
+	        		:<SignIn onPageChange={this.onPageChange}/>
+	        	)
+
+	    	}
+	        
+	       
 	      </div>
 	    );
 	  }
