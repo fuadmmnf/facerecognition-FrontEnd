@@ -35,10 +35,13 @@ class SignIn extends Component{
 			})
 		})
 		.then(response => response.json())
-		.then(data => 
+		.then(user => 
 		{
-			if(data === 'success')
+			if(user)
+			{
+				this.props.loadUser(user);
 				this.props.onPageChange('FaceDetection');
+			}
 		})
 
 
