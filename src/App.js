@@ -6,6 +6,7 @@ import Particles from 'react-particles-js';
 import FaceDetection from './components/facedetection/FaceDetection';
 import SignIn from './components/signin/SignIn';
 import Register from './components/register/Register';
+import Rank from './components/rank/Rank';
 import './App.css';
 import Clarifai from 'clarifai';
 
@@ -54,7 +55,17 @@ class App extends Component {
 			imageLink: '',
 			box : {},
 			page : 'signin',
-			isSignedIn: false
+			isSignedIn: false,
+
+			user: 
+			{
+				id:'' ,
+				name: '',
+				email: '',
+				password: '',
+				entries: 0,
+				joined: ''
+			}
 		}
 	}
 
@@ -73,6 +84,20 @@ class App extends Component {
 			bottomRow: imgHeight - (region.bottom_row * imgHeight)
 		}
 
+	}
+
+	loadUser = (data) =>
+	{
+		this.setState({user:
+			{
+				id: data.id,
+				name: data.name,
+				email: data.email,
+				password: data.password,
+				entries: data.entries,
+				joined: data.joined
+			}
+		});
 	}
 
 	calculateBox = (boxData) =>
@@ -98,26 +123,50 @@ class App extends Component {
 	{
 		this.setState({imageLink: this.state.input})
 		app.models.predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
-		.then(response=> this.calculateBox(this.calculateRegion(response)))
+		.then(response=>
+		{
+			if(response)
+			{
+				fetch('http://localhost:3000/image',
+				{
+					method: 'put',
+					headers: {'content-type':'application/json'},
+					body: JSON.stringify(
+					{
+						id: this.state.id
+					})
+				})
+				.then(data => data.json())
+				.then(count => 
+				{
+					this.setState(Object.assign(this.state.user,{entries:count}));
+				})
+				
+			}
+			this.calculateBox(this.calculateRegion(response));
+		}) 
 		.catch(err => console.log(err));
 	}
+
+
 	render() {
 	    return (
 	      <div >
 	      	 <Particles className='particles'
 	              params={particleProperty} />
-	        <Navigation onPageChange={this.onPageChange} isSignedIn ={this.state.isSignedIn}/>
+	        <Navigation onPageChange={this.onPageChange} isSignedIn = {this.state.isSignedIn} />
 	        {	
 	        	this.state.page === 'FaceDetection'
 	        	? <div>
 	      			<Logo />
+	      			<Rank name = {this.state.user.name} entries = {this.state.user.entries} />
 	     	   		<LinkForm onInput={this.onInputChange} onClick={this.onButtonSubmit}/>
 	       			<FaceDetection faceBox={this.state.box} imageURL={this.state.imageLink}/>
 	      		 </div> : 
 	        	(
 	        		this.state.page === 'Register'
 	        		? <Register onPageChange={this.onPageChange}/>
-	        		:<SignIn onPageChange={this.onPageChange}/>
+	        		:<SignIn onPageChange={this.onPageChange} loadUser={this.loadUser}/>
 	        	)
 
 	    	}
@@ -125,7 +174,7 @@ class App extends Component {
 	       
 	      </div>
 	    );
-	  }
+	}
 
 
 
