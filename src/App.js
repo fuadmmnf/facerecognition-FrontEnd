@@ -20,7 +20,6 @@ const particleProperty=
 {
 	particles: {
 		number:{
-
 			value: 80,
 			density:{
 				enable: true,
