@@ -75,7 +75,6 @@ class App extends Component {
 		const imgWidth = Number(image.width);
 		const imgHeight = Number(image.height);
 
-		console.log(resp.outputs[0].data);
 	
 		return{
 			leftCol: region.left_col * imgWidth ,
@@ -102,12 +101,12 @@ class App extends Component {
 
 	calculateBox = (boxData) =>
 	{
-		console.log(boxData);
 		this.setState({box:boxData});
 	}
 
 	onPageChange=(value) =>
 	{
+		this.state.imageLink = '';
 		if(value === 'FaceDetection') this.setState({isSignedIn : true});
 		else this.setState({isSignedIn : false});
 		this.setState({page: value});
@@ -133,12 +132,13 @@ class App extends Component {
 					headers: {'content-type':'application/json'},
 					body: JSON.stringify(
 					{
-						id: this.state.id
+						id: this.state.user.id
 					})
 				})
 				.then(data => data.json())
 				.then(count => 
 				{
+					
 					this.setState(Object.assign(this.state.user,{entries:count}));
 				})
 				
